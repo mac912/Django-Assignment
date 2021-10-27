@@ -5,20 +5,44 @@ from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 # Create your views here.
-@csrf_exempt
+@api_view(['GET', 'POST'])
 def CourseView(request):
     if request.method == 'GET':
         course = Course.objects.all()
         serializer = CourseSerializer(course, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data)
     
     elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = CourseSerializer(data=data)
+        serializer = CourseSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
+            return Response(serializer.data)
         else:
-            return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.errors)
+
+@api_view(['GET', 'DELETE', 'PUT'])
+def CourseDetailView(request, pk):
+    try:
+        course = Course.objects.get(pk=pk)
+    except Course.DoesNotExist:
+        return Response(status=404)
+
+    if request.method == 'DELETE':
+        course.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    elif request.method == 'GET':
+        serializer = CourseSerializer(course)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = CourseSerializer(course, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
