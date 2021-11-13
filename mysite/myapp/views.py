@@ -9,6 +9,32 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.http import Http404
+from rest_framework import mixins, generics
+
+class CourseListView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+    def get(self, request):
+        return self.list(request)
+
+    def post(self, request):
+        return self.create(request)
+
+class CourseDetailListView(generics.GenericAPIView, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+    def get(self, request, pk):
+        return self.retrieve(request, pk)
+
+    def put(self, request, pk):
+        return self.update(request, pk)
+
+    def delete(self, request, pk):
+        return self.delete(request, pk)
+
+    
 
 # Create your views here.
 #@api_view(['GET', 'POST'])
@@ -25,7 +51,7 @@ from django.http import Http404
 #             return Response(serializer.data)
 #         else:
 #             return Response(serializer.errors)
-
+'''
 class CourseListView(APIView):
     def get(self, request):
         course = Course.objects.all()
@@ -65,7 +91,7 @@ class CourseDetailListView(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
-
+'''
 
 
 # @api_view(['GET', 'DELETE', 'PUT'])
