@@ -11,6 +11,15 @@ from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework import mixins, generics
 
+class CourseListView(generics.ListCreateAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+class CourseDetailListView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+'''
 class CourseListView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
@@ -33,7 +42,7 @@ class CourseDetailListView(generics.GenericAPIView, mixins.RetrieveModelMixin, m
 
     def delete(self, request, pk):
         return self.delete(request, pk)
-
+'''
     
 
 # Create your views here.
